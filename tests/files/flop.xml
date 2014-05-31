@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<game>
+	<table button="1">
+		<player in_stack="200" name="vbo" sit="0" stack="180"/>
+		<player in_stack="100" name="lenny" sit="1" stack="80"/>
+		<player in_stack="200" name="kari" sit="3" stack="180"/>
+	</table>
+	<posts>
+		<post amount="10" player="kari" type="small_blind"/>
+		<post amount="20" player="vbo" type="big_blind"/>
+	</posts>
+	<betting>
+		<round name="preflop">
+			<action amount="20" player="lenny" type="call"/>
+			<action amount="20" player="kari" type="call"/>
+			<action amount="20" player="vbo" type="check"/>
+		</round>
+		<round name="flop"/>
+		<round name="turn"/>
+		<round name="river"/>
+	</betting>
+	<community>
+		<card rank="K" suit="S"/>
+		<card rank="9" suit="D"/>
+		<card rank="A" suit="S"/>
+	</community>
+</game>

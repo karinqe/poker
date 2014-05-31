@@ -1,0 +1,5 @@
+*.list
+*.pyc
+*.pyo
+*.pdf
+stats*.json
