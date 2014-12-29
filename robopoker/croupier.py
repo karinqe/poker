@@ -353,6 +353,7 @@ class Croupier(object):
 
     def log_winners(self):
         winners = [p for p in self.state.table.players() if p.win]
+        loosers = [p for p in self.state.table.players() if not p.win]
         assert winners
         for winner in winners:
             inf = [winner.name, 'wins', winner.win]
@@ -360,6 +361,15 @@ class Croupier(object):
                 combination = dictionary.describe_combination(
                     winner.hand.cards, winner.hand.base, winner.hand.kickers)
                 inf.extend(['with', combination, winner.hand.cards])
+            self._log(inf)
+
+        # log loosers too (this is useful info)
+        for looser in loosers:
+            inf = [looser.name, 'looses']
+            if looser.hand:
+                combination = dictionary.describe_combination(
+                    looser.hand.cards, looser.hand.base, looser.hand.kickers)
+                inf.extend(['with', combination, looser.hand.cards])
             self._log(inf)
 
     def _log(self, s='', nl=True):
