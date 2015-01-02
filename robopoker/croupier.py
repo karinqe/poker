@@ -53,7 +53,7 @@ class Croupier(object):
                     player, player.hand and player.pocket or None)
             if player.win:
                 player.stack += player.win
-        self.log_winners()
+        self.log_winners_and_loosers()
 
     def deal_pockets(self):
         self._log('DEAL')
@@ -351,7 +351,7 @@ class Croupier(object):
                 (name_stack, act, player.table_chips()))
         sys.stdout.flush()
 
-    def log_winners(self):
+    def log_winners_and_loosers(self):
         winners = [p for p in self.state.table.players() if p.win]
         loosers = [p for p in self.state.table.players() if not p.win]
         assert winners
