@@ -117,7 +117,7 @@ class RandomizedSmartBot(SmartBot):
     name = 'randomized-smart'
 
     def get_decision_probabilities(self):
-        triplet = super(self, RandomizedSmartBot).get_decision_probabilities()
+        triplet = self.get_decision_probabilities()
         if triplet == [0, 0, 1]:
             triplet = [0.1, 0.2, 0.7]
         elif triplet == [0, 1, 0]:

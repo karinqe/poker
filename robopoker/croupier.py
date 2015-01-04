@@ -19,26 +19,26 @@ class Croupier(object):
         self.pots = [0]
         self.structure = (
             ('preflop', 0, 20),
-            ('flop',    3, 20),
-            ('turn',    1, 40),
-            ('river',   1, 40),
+            ('flop', 3, 20),
+            ('turn', 1, 40),
+            ('river', 1, 40),
         )
         self.posts = (
             ('small_blind', 0.5),
-            ('big_blind',   1)
+            ('big_blind', 1)
         )
 
     def conduct(self):
         self.deal_pockets()
-        for i, (round, draw, bet) in enumerate(self.structure):
-            self._log('%-10s  ' % str(round).upper(), False)
+        for i, (rnd, draw, bet) in enumerate(self.structure):
+            self._log('%-10s  ' % str(rnd).upper(), False)
             if draw:
                 self.deal_community(draw)
             self._log()
             posts = ()
             if not i and self.posts:
                 posts = self.posts
-            pots = self.betting_round(round, min_bet=bet, posts=posts)
+            pots = self.betting_round(rnd, min_bet=bet, posts=posts)
             self.pots = self.pots[:-1] + [self.pots[-1] + pots[0]] + pots[1:]
             self._log(('POTS', self.pots))
         self._log('SHOWDOWN')
@@ -59,7 +59,7 @@ class Croupier(object):
     def deal_pockets(self):
         self._log('DEAL')
         players = self.state.table.players()
-        for card in range(0, 2):
+        for _ in range(2):
             for p in players:
                 p.pocket.add(self.state.deck.draw())
         for p in players:
@@ -67,7 +67,7 @@ class Croupier(object):
 
     def deal_community(self, count=1):
         self.state.deck.draw()
-        for deal in range(0, count):
+        for _ in range(count):
             draw = self.state.deck.draw()
             self.state.community.append(draw)
             self._log(draw, False)
@@ -78,7 +78,7 @@ class Croupier(object):
             return None
         return r
 
-    def betting_round(self, round, min_bet, posts):
+    def betting_round(self, rnd, min_bet, posts):
         """
         Plays one full betting round.
         Optional process live blind posts.
@@ -171,7 +171,7 @@ class Croupier(object):
                         'empty stack without allin. act: ' + act)
                     player.allin = True
                 self.log_act(player, act)
-                self.state.add_action(round, player, act, amount, error)
+                self.state.add_action(rnd, player, act, amount, error)
             # Loop is done
             # Reiterating...
             full_loops += 1
@@ -258,12 +258,12 @@ class Croupier(object):
             if pl.allin and pl.bet:
                 # All-in player may not win
                 # more money that he invest
-                max = pl.bet
+                mx = pl.bet
                 for depositor in players[i:]:
                     # Part of depositor's bet
                     # goes to main pot
-                    cur_pot += max
-                    depositor.bet -= max
+                    cur_pot += mx
+                    depositor.bet -= mx
                 # Main pot filled.
                 # Detach it and open new
                 pots.append(cur_pot)
@@ -312,11 +312,11 @@ class Croupier(object):
         absolute_winners = self.determine_winners(contenders)
 
         senior_winners = set()  # absolute winners of the senior pot
-        pots_closing_index = None  # reversed index of last side pot with known winner
+        pots_closing_index = None  # reversed index of last side pot
         for i, pot in enumerate(reversed(self.pots)):
             pot_winners = by_pot[pot]
-            absolute_pot_winners = ((set(pot_winners) & set(absolute_winners)) |
-                                    senior_winners)
+            absolute_pot_winners = ((set(pot_winners) & set(absolute_winners))
+                                    | senior_winners)
             if absolute_pot_winners:
                 if pots_closing_index is None:
                     pots_closing_index = i

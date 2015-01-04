@@ -69,9 +69,9 @@ def dump_posts(posts):
 
 def dump_betting(betting):
     root = ET.Element('betting')
-    for round in ('preflop', 'flop', 'turn', 'river'):
-        actions = betting[round]
-        sub = ET.SubElement(root, 'round', {'name': round})
+    for rnd in ('preflop', 'flop', 'turn', 'river'):
+        actions = betting[rnd]
+        sub = ET.SubElement(root, 'round', {'name': rnd})
         for act in actions:
             attrs = {
                 'player': act['player'],
@@ -127,10 +127,8 @@ def dump_showdown(showdown):
     root = ET.Element('showdown')
     for show in showdown:
         sub = ET.SubElement(root, 'player',
-                            {
-                            'name': show['player'],
-                            'win': str(show['win'])
-                            })
+                            {'name': show['player'],
+                             'win': str(show['win'])})
         if show['hand']:
             hand = ET.SubElement(sub, 'hand')
             for card in show['hand'].cards:
@@ -142,12 +140,12 @@ def dump_card(card):
     return ET.Element('card', {'rank': card.rank, 'suit': card.suit})
 
 
-def open(source):
+def open_source(source):
     return ET.parse(source).getroot()
 
 
 def parse(source):
-    root = open(source)
+    root = open_source(source)
     table = parse_table(root.find('table'))
     deck = parse_deck(root.find('deck'))
     res = interface.HandState(table, deck)
