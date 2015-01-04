@@ -53,7 +53,7 @@ class Croupier(object):
                     player, player.hand and player.pocket or None)
             if player.win:
                 player.stack += player.win
-        self.log_winners_and_loosers()
+        self.log_winners_and_losers()
 
     def deal_pockets(self):
         self._log('DEAL')
@@ -351,9 +351,9 @@ class Croupier(object):
                 (name_stack, act, player.table_chips()))
         sys.stdout.flush()
 
-    def log_winners_and_loosers(self):
+    def log_winners_and_losers(self):
         winners = [p for p in self.state.table.players() if p.win]
-        loosers = [p for p in self.state.table.players() if not p.win]
+        losers = [p for p in self.state.table.players() if not p.win]
         assert winners
         for winner in winners:
             inf = [winner.name, 'wins', winner.win]
@@ -363,13 +363,13 @@ class Croupier(object):
                 inf.extend(['with', combination, winner.hand.cards])
             self._log(inf)
 
-        # log loosers too (this is useful info)
-        for looser in loosers:
-            inf = [looser.name, 'looses']
-            if looser.hand:
+        # log losers too (this is useful info)
+        for loser in losers:
+            inf = [loser.name, 'looses']
+            if loser.hand:
                 combination = dictionary.describe_combination(
-                    looser.hand.cards, looser.hand.base, looser.hand.kickers)
-                inf.extend(['with', combination, looser.hand.cards])
+                    loser.hand.cards, loser.hand.base, loser.hand.kickers)
+                inf.extend(['with', combination, loser.hand.cards])
             self._log(inf)
 
     def _log(self, s='', nl=True):
