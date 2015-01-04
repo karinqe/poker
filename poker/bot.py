@@ -10,6 +10,7 @@ BET_AMOUNT = 20
 
 
 class SimpleBot(object):
+
     """Simplest strategy, always call if we can"""
     name = 'simple'
 
@@ -56,6 +57,7 @@ class SimpleBot(object):
 
 
 class RandomBot(SimpleBot):
+
     """Choose fold/call/raise randomly with equal probabilities"""
     name = 'random'
 
@@ -64,6 +66,7 @@ class RandomBot(SimpleBot):
 
 
 class ThresholdBot(SimpleBot):
+
     """Choosing based on whether the hand strength is higher than threshold"""
     name = 'threshold'
     RAISE_THRESHOLD = 0.7
@@ -81,6 +84,7 @@ class ThresholdBot(SimpleBot):
 
 
 class SmartBot(SimpleBot):
+
     """Raise based on hand strenght and #players, call based on pot odds"""
     name = 'smart'
     RAISE_THRESHOLD = 0.6
@@ -88,7 +92,7 @@ class SmartBot(SimpleBot):
 
     def get_decision_probabilities(self):
         raise_needed = self.state.max_bet - self.state.bet
-        pot_odds = raise_needed/float(self.state.pot + raise_needed)
+        pot_odds = raise_needed / float(self.state.pot + raise_needed)
         reraise_pot_odds = ((BET_AMOUNT + raise_needed) /
                             float(self.state.pot + raise_needed + BET_AMOUNT))
         hand_strength = math.pow(self.state.get_hand_strength(),
@@ -108,11 +112,12 @@ class SmartBot(SimpleBot):
 
 
 class RandomizedSmartBot(SmartBot):
+
     """Same as SmartBot, but sometimes randomly chooses different action"""
     name = 'randomized-smart'
 
     def get_decision_probabilities(self):
-        triplet = super(self, RandomizedSmartBot).get_decision_probabilities()
+        triplet = self.get_decision_probabilities()
         if triplet == [0, 0, 1]:
             triplet = [0.1, 0.2, 0.7]
         elif triplet == [0, 1, 0]:
@@ -124,6 +129,7 @@ class RandomizedSmartBot(SmartBot):
 
 
 class AgressiveLooseBot(SmartBot):
+
     """Raise even with bad hand; play even bad hands in preflop"""
     name = 'agressive-loose'
     RAISE_THRESHOLD = 0.5
@@ -131,12 +137,14 @@ class AgressiveLooseBot(SmartBot):
 
 
 class AgressiveTightBot(AgressiveLooseBot):
+
     """Raise even with bad hand; play only good hands in preflop"""
     name = 'agressive-tight'
     PREFLOP_CALL_THRESHOLD = 0.6
 
 
 class PassiveLooseBot(SmartBot):
+
     """Raise only with a good hand; play even bad hands in preflop"""
     name = 'passive-loose'
     RAISE_THRESHOLD = 0.7
@@ -144,6 +152,7 @@ class PassiveLooseBot(SmartBot):
 
 
 class PassiveTightBot(PassiveLooseBot):
+
     """Raise only with a good hand; play only good hands in preflop"""
     name = 'passive'
     PREFLOP_CALL_THRESHOLD = 0.6

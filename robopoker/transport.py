@@ -4,26 +4,25 @@ from urllib2 import urlopen, URLError
 import socket
 
 
-def create(type, service):
+def create(service_type, service):
     socket.setdefaulttimeout(HTTP.TIMEOUT + 2)
-    return {'local': Local, 'http': HTTP}[type](service)
+    return {'local': Local, 'http': HTTP}[service_type](service)
 
 
 class Abstract(object):
+
     def __init__(self, service):
         self.service = service
-
-    def message(self, name, pocket, actions, state):
-        raise Exception('Abstract method called')
 
     def type(self):
         return str(self.__class__.__name__).lower()
 
 
 class Local(Abstract):
+
     def message(self, name, pocket, actions, state):
         p = Popen(self.service, stdin=PIPE, stdout=PIPE,
-                stderr=STDOUT, universal_newlines=True, shell=True)
+                  stderr=STDOUT, universal_newlines=True, shell=True)
         w = p.stdin.write
         w(name + "\n")
         w(pocket + "\n")
@@ -44,11 +43,10 @@ class HTTP(Abstract):
 
     def message(self, name, pocket, actions, state):
         data = {
-            'name':    name,
-            'pocket':  str(pocket),
+            'name': name,
+            'pocket': str(pocket),
             'actions': '\n'.join(actions),
-            'state':   state
-        }
+            'state': state}
         try_no = 1
         last_err = None
         while try_no <= HTTP.RETRY_CNT:

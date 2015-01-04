@@ -9,6 +9,7 @@ FILES = os.path.join("tests", "files")
 
 
 class TestHoleParsing(object):
+
     def test_hole_cards(self):
         hole = "7D AC"
         hole_cards = [Card('7', 'D'), Card('A', 'C')]
@@ -36,6 +37,7 @@ class TestHoleParsing(object):
 
 
 class TestActionParsing(object):
+
     def test_possible_actions(self):
         hole = "7D AC"
         actions = ["fold", "call", "raise"]

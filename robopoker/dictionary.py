@@ -34,18 +34,18 @@ SUIT_NAME = {
 }
 
 COMBINATION_NAME = {
-    'high':   'Garbage',
-    'pair':   'Pair',
-    'two':    'Two Pair',
-    'set':    'Three of a Kind',
-    'str':    'Straight',
-    'flush':  'Flush',
-    'full':   'Full House',
-    'quad':   'Four of a Kind',
+    'high': 'Garbage',
+    'pair': 'Pair',
+    'two': 'Two Pair',
+    'set': 'Three of a Kind',
+    'str': 'Straight',
+    'flush': 'Flush',
+    'full': 'Full House',
+    'quad': 'Four of a Kind',
     'sflush': 'Straight Flush'
 }
 
 
-def describe_combination(cardset, base, kickers):
+def describe_combination(cards, base, kickers):
     # TODO: return something like "Straight, Ace High"
     return COMBINATION_NAME[COMBINATION[base]]

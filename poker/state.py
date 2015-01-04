@@ -53,7 +53,7 @@ class State(object):
             3: 'flop',
             4: 'turn',
             5: 'river',
-            }[len(self.community)]
+        }[len(self.community)]
 
     @property
     def raise_count(self):
@@ -86,10 +86,10 @@ class State(object):
         return state
 
     def _get_current_round_actions(self):
-        round_index = ROUNDS.index(self.round)
-        round = self._state['game']['betting']['round'][round_index]
-        assert round['@name'] == self.round
-        actions = round.get('action', [])
+        rnd_index = ROUNDS.index(self.round)
+        rnd = self._state['game']['betting']['round'][rnd_index]
+        assert rnd['@name'] == self.round
+        actions = rnd.get('action', [])
         if isinstance(actions, dict):
             # the way we transform xml to dict, if there is only one action in
             # the round, then if will be just a dict, otherwise it's a
@@ -131,12 +131,12 @@ def parse_players(state):
     players = state['game']['table']['player']
     active_players = list()
     rounds = state['game']['betting']['round']
-    for i, round in enumerate(rounds):
-        if round and 'action' in round and isinstance(round['action'], dict):
+    for i, rnd in enumerate(rounds):
+        if rnd and 'action' in rnd and isinstance(rnd['action'], dict):
             # the way we transform xml to dict, if there is only one action in
             # the round, then if will be just a dict, otherwise it's a
             # list of dicts - make it so that it's always a list
-            rounds[i]['action'] = [round['action']]
+            rounds[i]['action'] = [rnd['action']]
     actions = [r['action'] for r in rounds if 'action' in r]
     actions = list(itertools.chain.from_iterable(actions))
     for player in players:

@@ -10,6 +10,7 @@ from . import dictionary
 from . import transport
 from .handstate.representation import dump as dump_handstate
 
+
 class Croupier(object):
 
     def __init__(self, state, log):
@@ -18,26 +19,26 @@ class Croupier(object):
         self.pots = [0]
         self.structure = (
             ('preflop', 0, 20),
-            ('flop',    3, 20),
-            ('turn',    1, 40),
-            ('river',   1, 40),
+            ('flop', 3, 20),
+            ('turn', 1, 40),
+            ('river', 1, 40),
         )
         self.posts = (
             ('small_blind', 0.5),
-            ('big_blind',   1)
+            ('big_blind', 1)
         )
 
     def conduct(self):
         self.deal_pockets()
-        for i, (round, draw, bet) in enumerate(self.structure):
-            self._log('%-10s  ' % str(round).upper(), False)
+        for i, (rnd, draw, bet) in enumerate(self.structure):
+            self._log('%-10s  ' % str(rnd).upper(), False)
             if draw:
                 self.deal_community(draw)
             self._log()
             posts = ()
             if not i and self.posts:
                 posts = self.posts
-            pots = self.betting_round(round, min_bet=bet, posts=posts)
+            pots = self.betting_round(rnd, min_bet=bet, posts=posts)
             self.pots = self.pots[:-1] + [self.pots[-1] + pots[0]] + pots[1:]
             self._log(('POTS', self.pots))
         self._log('SHOWDOWN')
@@ -53,12 +54,12 @@ class Croupier(object):
                     player, player.hand and player.pocket or None)
             if player.win:
                 player.stack += player.win
-        self.log_winners()
+        self.log_winners_and_losers()
 
     def deal_pockets(self):
         self._log('DEAL')
         players = self.state.table.players()
-        for card in range(0, 2):
+        for _ in range(2):
             for p in players:
                 p.pocket.add(self.state.deck.draw())
         for p in players:
@@ -66,7 +67,7 @@ class Croupier(object):
 
     def deal_community(self, count=1):
         self.state.deck.draw()
-        for deal in range(0, count):
+        for _ in range(count):
             draw = self.state.deck.draw()
             self.state.community.append(draw)
             self._log(draw, False)
@@ -77,7 +78,7 @@ class Croupier(object):
             return None
         return r
 
-    def betting_round(self, round, min_bet, posts):
+    def betting_round(self, rnd, min_bet, posts):
         """
         Plays one full betting round.
         Optional process live blind posts.
@@ -105,7 +106,8 @@ class Croupier(object):
                         else:
                             # Post does not go directly to the bet stack.
                             # Player must be allowed to check or raise his post
-                            # later at his turn, even if all other players call it
+                            # later at his turn, even if all other players call
+                            # it
                             player.blind = amount
                         player.stack -= amount
                         # But it is "live" bet for other players
@@ -124,10 +126,12 @@ class Croupier(object):
                 # Ok. Now player must act.
                 # Lets check out what kinds of action are possible...
                 # TODO: determine possible amounts for each act
-                possible = self.possible_actions(player, players, cur_bet, min_bet)
+                possible = self.possible_actions(
+                    player, players, cur_bet, min_bet)
                 error = None
                 try:
-                    response = player.message(possible.keys(), dump_handstate(self.state))
+                    response = player.message(
+                        possible.keys(), dump_handstate(self.state))
                 except transport.Error as e:
                     error = (str(e), 'transport')
                     self._log('ERROR: transport error ' + str(e))
@@ -149,7 +153,8 @@ class Croupier(object):
                 if act == 'fold':
                     player.folded = True
                 # Currently action amount is just one that possible
-                # TODO: not-so-limit game, where player may determine amount of his bet
+                # TODO: not-so-limit game, where player may determine amount of
+                # his bet
                 amount = possible[act]
                 extra = amount - player.table_chips()
                 assert extra >= 0
@@ -162,10 +167,11 @@ class Croupier(object):
                 # Now it is bet
                 player.blind = 0
                 if not player.stack:
-                    assert act == 'allin', ('empty stack without allin. act: ' + act)
+                    assert act == 'allin', (
+                        'empty stack without allin. act: ' + act)
                     player.allin = True
                 self.log_act(player, act)
-                self.state.add_action(round, player, act, amount, error)
+                self.state.add_action(rnd, player, act, amount, error)
             # Loop is done
             # Reiterating...
             full_loops += 1
@@ -216,7 +222,8 @@ class Croupier(object):
                 r = {'allin': allin_amount}
             else:
                 r = {'call': cur_bet}
-                active_players = [pl for pl in players if not pl.allin and not pl.folded]
+                active_players = [
+                    pl for pl in players if not pl.allin and not pl.folded]
                 if len(active_players) > 1:
                     raise_amount = cur_bet + min_bet
                     if raise_amount <= min_bet * 4:
@@ -251,12 +258,12 @@ class Croupier(object):
             if pl.allin and pl.bet:
                 # All-in player may not win
                 # more money that he invest
-                max = pl.bet
+                mx = pl.bet
                 for depositor in players[i:]:
                     # Part of depositor's bet
                     # goes to main pot
-                    cur_pot += max
-                    depositor.bet -= max
+                    cur_pot += mx
+                    depositor.bet -= mx
                 # Main pot filled.
                 # Detach it and open new
                 pots.append(cur_pot)
@@ -305,11 +312,11 @@ class Croupier(object):
         absolute_winners = self.determine_winners(contenders)
 
         senior_winners = set()  # absolute winners of the senior pot
-        pots_closing_index = None  # reversed index of last side pot with known winner
+        pots_closing_index = None  # reversed index of last side pot
         for i, pot in enumerate(reversed(self.pots)):
             pot_winners = by_pot[pot]
-            absolute_pot_winners = ((set(pot_winners) & set(absolute_winners)) |
-                                                                senior_winners)
+            absolute_pot_winners = ((set(pot_winners) & set(absolute_winners))
+                                    | senior_winners)
             if absolute_pot_winners:
                 if pots_closing_index is None:
                     pots_closing_index = i
@@ -348,11 +355,12 @@ class Croupier(object):
     def log_act(self, player, act):
         name_stack = '%s[%d]' % (player.name, player.stack)
         self._log('  %-10s %s[%d]' %
-                (name_stack, act, player.table_chips()))
+                 (name_stack, act, player.table_chips()))
         sys.stdout.flush()
 
-    def log_winners(self):
+    def log_winners_and_losers(self):
         winners = [p for p in self.state.table.players() if p.win]
+        losers = [p for p in self.state.table.players() if not p.win]
         assert winners
         for winner in winners:
             inf = [winner.name, 'wins', winner.win]
@@ -360,6 +368,15 @@ class Croupier(object):
                 combination = dictionary.describe_combination(
                     winner.hand.cards, winner.hand.base, winner.hand.kickers)
                 inf.extend(['with', combination, winner.hand.cards])
+            self._log(inf)
+
+        # log losers too (this is useful info)
+        for loser in losers:
+            inf = [loser.name, 'looses']
+            if loser.hand:
+                combination = dictionary.describe_combination(
+                    loser.hand.cards, loser.hand.base, loser.hand.kickers)
+                inf.extend(['with', combination, loser.hand.cards])
             self._log(inf)
 
     def _log(self, s='', nl=True):

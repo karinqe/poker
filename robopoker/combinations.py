@@ -1,4 +1,5 @@
-RANKS = [None, None, '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+RANKS = [None, None, '2', '3', '4', '5',
+         '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 
 def rate_hand(hand):
@@ -12,7 +13,8 @@ def rate_hand(hand):
          1      One pair
                 Two cards of one rank plus garbage
          2      Two pair
-                Two cards of the same rank, plus two cards of another rank, plus garbage
+                Two cards of the same rank, plus two cards of another rank,
+                plus garbage
          3      Three of a Kind
                 Three cards of the same rank plus garbage
          4      Straight
@@ -34,14 +36,14 @@ def rate_hand(hand):
     vals = hand_vals(hand)
     fl = flush(hand)
     if fl:
-        str = straight(fl)
-        if str:
-            return 8, str
+        strng = straight(fl)
+        if strng:
+            return 8, strng
         fl.reverse()
         return 5, fl
-    str = straight(vals)
-    if str:
-        return 4, str
+    strng = straight(vals)
+    if strng:
+        return 4, strng
     ck = count_kind(vals)
     if len(ck[4]):
         return 7, ck[4] + ck[1][:1]
@@ -82,7 +84,8 @@ def hand_vals(hand):
 def count_kind(vals):
     """
     A somewhat crufty sorting method for poker.
-    Inventor: http://charlesleifer.com/blog/robopoker-hand-evaluation-project-euler-54/
+    Inventor:
+    http://charlesleifer.com/blog/robopoker-hand-evaluation-project-euler-54/
     """
     ck = {1: [], 2: [], 3: [], 4: []}
     for card in vals:
@@ -97,7 +100,7 @@ def count_kind(vals):
                 break
         if not added:
             ck[1].append(card)
-    for k, v in ck.items():
+    for v in ck.itervalues():
         v.sort()
         v.reverse()
     # correct for 5-card combinations (i.e., 2x3-of-a-kind or 3x2-of-a-kind)
@@ -116,7 +119,7 @@ def flush(hand):
     for card in hand:
         suits[card[1]].append(card)
     fl = None
-    for (s, cards) in suits.items():
+    for cards in suits.itervalues():
         if (len(cards) >= 5):
             fl = cards
             break
@@ -128,24 +131,24 @@ def flush(hand):
 
 
 def straight(vals):
-    vals = vals[:] # vals is mutable. copy.
+    vals = vals[:]  # vals is mutable. copy.
     for x in range(len(vals), 4, -1):
         if vals[x - 1] == 14:
-            vals.insert(0, 1) # simulate an ace at the beginning
+            vals.insert(0, 1)  # simulate an ace at the beginning
     seq = 1
     last = len(vals) - 1
     # count sequential vals
     # trying to find longest sequence
     for i, x in enumerate(vals):
-        next = None
+        nxt = None
         if last != i:
-            next = vals[i + 1]
-        if next == x + 1:
+            nxt = vals[i + 1]
+        if nxt == x + 1:
             seq += 1
-        elif next != x:
+        elif nxt != x:
             if seq >= 5:
                 return [x]
-            if not next:
+            if not nxt:
                 return []
             seq = 1
 
@@ -155,48 +158,48 @@ if __name__ == '__main__':
 
     def test_rate(silent=False):
         fixture = [
-            ['AS 2S 3S 4S 5S',       'sflush', [5]],
-            ['2S 3S 4S 5S 6S',       'sflush', [6]],
-            ['AS KS QS JS TS',       'sflush', [14]],
-            ['AS AC 3S AD AH 2H 4D', 'quad',   [14, 4]],
-            ['3D 3C 3S AD AH',       'full',   [3, 14]],
-            ['AC 7S 6H AH 8H 2D AD', 'set',    [14, 8, 7]],
-            ['AS 2S 3S TS QS',       'flush',  [14, 12, 10, 3,  2]],
-            ['AD 2S 3S TS QS 5S',    'flush',  [12, 10, 5,  3,  2]],
-            ['AS KS QD JS TS 5S',    'flush',  [14, 13, 11, 10, 5]],
-            ['AS KS QD TS 5S 2S JS', 'flush',  [14, 13, 11, 10, 5]],
-            ['AD 2S 3C 4S TS 5D',    'str',    [5]],
-            ['2S 3S 4S 5S 6D',       'str',    [6]],
-            ['2S 3S 4S 5S 6D 7D',    'str',    [7]],
-            ['3D 3S 3H AS 4D QH 5H', 'set',    [3, 14, 12]],
-            ['3D 3S AH AS 4D 6H',    'two',    [14, 3, 6]],
-            ['3D 3S 5H AS 4D',       'pair',   [3, 14, 5, 4]],
-            ['TD 2D 6D 8C JH 3H JC', 'pair',   [11, 10, 8, 6]],
-            ['TD 2D 6D 8C JH 2S 7H', 'pair',   [2, 11, 10, 8]],
-            ['3D QS 5H AS 4D',       'high',   [14, 12, 5, 4, 3]],
+            ['AS 2S 3S 4S 5S', 'sflush', [5]],
+            ['2S 3S 4S 5S 6S', 'sflush', [6]],
+            ['AS KS QS JS TS', 'sflush', [14]],
+            ['AS AC 3S AD AH 2H 4D', 'quad', [14, 4]],
+            ['3D 3C 3S AD AH', 'full', [3, 14]],
+            ['AC 7S 6H AH 8H 2D AD', 'set', [14, 8, 7]],
+            ['AS 2S 3S TS QS', 'flush', [14, 12, 10, 3, 2]],
+            ['AD 2S 3S TS QS 5S', 'flush', [12, 10, 5, 3, 2]],
+            ['AS KS QD JS TS 5S', 'flush', [14, 13, 11, 10, 5]],
+            ['AS KS QD TS 5S 2S JS', 'flush', [14, 13, 11, 10, 5]],
+            ['AD 2S 3C 4S TS 5D', 'str', [5]],
+            ['2S 3S 4S 5S 6D', 'str', [6]],
+            ['2S 3S 4S 5S 6D 7D', 'str', [7]],
+            ['3D 3S 3H AS 4D QH 5H', 'set', [3, 14, 12]],
+            ['3D 3S AH AS 4D 6H', 'two', [14, 3, 6]],
+            ['3D 3S 5H AS 4D', 'pair', [3, 14, 5, 4]],
+            ['TD 2D 6D 8C JH 3H JC', 'pair', [11, 10, 8, 6]],
+            ['TD 2D 6D 8C JH 2S 7H', 'pair', [2, 11, 10, 8]],
+            ['3D QS 5H AS 4D', 'high', [14, 12, 5, 4, 3]],
         ]
         for (hand, expected, kickers) in fixture:
             expected = dictionary.COMBINATION.index(expected)
             actual = rate_hand(hand.split())
             if not silent:
                 print '%-20s %-6s %-6s %s' % (
-                       hand, expected, actual[0] == expected and 'ok' or '!!! ' + str(actual[0]),
-                       actual[1] != kickers and str(kickers) + ' !!! ' + str(actual[1]) or '')
+                    hand, expected, actual[
+                        0] == expected and 'ok' or '!!! ' + str(actual[0]),
+                    actual[1] != kickers and str(kickers) + ' !!! ' + str(
+                        actual[1]) or '')
 
     def test_cmp(silent=False):
         fixture = [
-            [[20, 10, 5,  4],  [10, 12, 5, 4],  1],
-            [[20, 10, 5,  4],  [20, 10, 5, 4],  0],
-            [[20, 10, 5,  4],  [20, 12, 5, 4], -1],
-            [[20, 10, 19, 4],  [20, 12, 5, 4], -1],
-        ]
+            [[20, 10, 5, 4], [10, 12, 5, 4], 1],
+            [[20, 10, 5, 4], [20, 10, 5, 4], 0],
+            [[20, 10, 5, 4], [20, 12, 5, 4], -1],
+            [[20, 10, 19, 4], [20, 12, 5, 4], -1]]
         for rate_x, rate_y, expected in fixture:
             actual = cmp_rate(rate_x, rate_y)
             if not silent:
                 print '%-20s %-20s %s' % (
                     rate_x, rate_y,
-                    'ok'
-                    if expected == actual
+                    'ok' if expected == actual
                     else str(expected) + '!!!' + str(actual))
 
     test_rate()

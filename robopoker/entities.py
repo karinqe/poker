@@ -39,7 +39,7 @@ class Deck(object):
             cards = [
                 Card(r, s)
                 for r in dictionary.RANK_NAME.keys()
-                    for s in dictionary.SUIT_NAME.keys()
+                for s in dictionary.SUIT_NAME.keys()
             ]
         self.cards = cards
 
@@ -93,7 +93,7 @@ class Player(object):
 
     def message(self, actions, state):
         return self.transport.message(
-                self.name, repr(self.pocket), actions, state)
+            self.name, repr(self.pocket), actions, state)
 
     def table_chips(self):
         return self.blind + (self.bet or 0)
