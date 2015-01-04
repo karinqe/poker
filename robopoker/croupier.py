@@ -10,6 +10,7 @@ from . import dictionary
 from . import transport
 from .handstate.representation import dump as dump_handstate
 
+
 class Croupier(object):
 
     def __init__(self, state, log):
@@ -105,7 +106,8 @@ class Croupier(object):
                         else:
                             # Post does not go directly to the bet stack.
                             # Player must be allowed to check or raise his post
-                            # later at his turn, even if all other players call it
+                            # later at his turn, even if all other players call
+                            # it
                             player.blind = amount
                         player.stack -= amount
                         # But it is "live" bet for other players
@@ -124,10 +126,12 @@ class Croupier(object):
                 # Ok. Now player must act.
                 # Lets check out what kinds of action are possible...
                 # TODO: determine possible amounts for each act
-                possible = self.possible_actions(player, players, cur_bet, min_bet)
+                possible = self.possible_actions(
+                    player, players, cur_bet, min_bet)
                 error = None
                 try:
-                    response = player.message(possible.keys(), dump_handstate(self.state))
+                    response = player.message(
+                        possible.keys(), dump_handstate(self.state))
                 except transport.Error as e:
                     error = (str(e), 'transport')
                     self._log('ERROR: transport error ' + str(e))
@@ -149,7 +153,8 @@ class Croupier(object):
                 if act == 'fold':
                     player.folded = True
                 # Currently action amount is just one that possible
-                # TODO: not-so-limit game, where player may determine amount of his bet
+                # TODO: not-so-limit game, where player may determine amount of
+                # his bet
                 amount = possible[act]
                 extra = amount - player.table_chips()
                 assert extra >= 0
@@ -162,7 +167,8 @@ class Croupier(object):
                 # Now it is bet
                 player.blind = 0
                 if not player.stack:
-                    assert act == 'allin', ('empty stack without allin. act: ' + act)
+                    assert act == 'allin', (
+                        'empty stack without allin. act: ' + act)
                     player.allin = True
                 self.log_act(player, act)
                 self.state.add_action(round, player, act, amount, error)
@@ -216,7 +222,8 @@ class Croupier(object):
                 r = {'allin': allin_amount}
             else:
                 r = {'call': cur_bet}
-                active_players = [pl for pl in players if not pl.allin and not pl.folded]
+                active_players = [
+                    pl for pl in players if not pl.allin and not pl.folded]
                 if len(active_players) > 1:
                     raise_amount = cur_bet + min_bet
                     if raise_amount <= min_bet * 4:
@@ -309,7 +316,7 @@ class Croupier(object):
         for i, pot in enumerate(reversed(self.pots)):
             pot_winners = by_pot[pot]
             absolute_pot_winners = ((set(pot_winners) & set(absolute_winners)) |
-                                                                senior_winners)
+                                    senior_winners)
             if absolute_pot_winners:
                 if pots_closing_index is None:
                     pots_closing_index = i
@@ -348,7 +355,7 @@ class Croupier(object):
     def log_act(self, player, act):
         name_stack = '%s[%d]' % (player.name, player.stack)
         self._log('  %-10s %s[%d]' %
-                (name_stack, act, player.table_chips()))
+                 (name_stack, act, player.table_chips()))
         sys.stdout.flush()
 
     def log_winners_and_losers(self):

@@ -15,7 +15,7 @@ def cdf(weights):
     cummulative_sum = 0
     for w in weights:
         cummulative_sum += w
-        result.append(cummulative_sum/total)
+        result.append(cummulative_sum / total)
     return result
 
 

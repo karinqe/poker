@@ -108,7 +108,7 @@ def dump_table(table):
             pocket.append(dump_card(card))
         tr = player.transport
         ET.SubElement(player_el, 'transport',
-            {'type': tr.type(), 'service': tr.service})
+                      {'type': tr.type(), 'service': tr.service})
     return root
 
 
@@ -127,10 +127,10 @@ def dump_showdown(showdown):
     root = ET.Element('showdown')
     for show in showdown:
         sub = ET.SubElement(root, 'player',
-            {
-                'name': show['player'],
-                'win': str(show['win'])
-            })
+                            {
+                            'name': show['player'],
+                            'win': str(show['win'])
+                            })
         if show['hand']:
             hand = ET.SubElement(sub, 'hand')
             for card in show['hand'].cards:

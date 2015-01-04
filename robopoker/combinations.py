@@ -1,4 +1,5 @@
-RANKS = [None, None, '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
+RANKS = [None, None, '2', '3', '4', '5',
+         '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A']
 
 
 def rate_hand(hand):
@@ -128,10 +129,10 @@ def flush(hand):
 
 
 def straight(vals):
-    vals = vals[:] # vals is mutable. copy.
+    vals = vals[:]  # vals is mutable. copy.
     for x in range(len(vals), 4, -1):
         if vals[x - 1] == 14:
-            vals.insert(0, 1) # simulate an ace at the beginning
+            vals.insert(0, 1)  # simulate an ace at the beginning
     seq = 1
     last = len(vals) - 1
     # count sequential vals
@@ -180,8 +181,9 @@ if __name__ == '__main__':
             actual = rate_hand(hand.split())
             if not silent:
                 print '%-20s %-6s %-6s %s' % (
-                       hand, expected, actual[0] == expected and 'ok' or '!!! ' + str(actual[0]),
-                       actual[1] != kickers and str(kickers) + ' !!! ' + str(actual[1]) or '')
+                    hand, expected, actual[
+                        0] == expected and 'ok' or '!!! ' + str(actual[0]),
+                    actual[1] != kickers and str(kickers) + ' !!! ' + str(actual[1]) or '')
 
     def test_cmp(silent=False):
         fixture = [

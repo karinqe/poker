@@ -47,7 +47,7 @@ class Controller(object):
                 players.append(
                     (int(sit),
                         Player(data[1],
-                            transport.create(data[3], data[4]), data[2])))
+                               transport.create(data[3], data[4]), data[2])))
             return players, button
 
         def create_state(players, button):

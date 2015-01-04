@@ -53,7 +53,7 @@ class State(object):
             3: 'flop',
             4: 'turn',
             5: 'river',
-            }[len(self.community)]
+        }[len(self.community)]
 
     @property
     def raise_count(self):

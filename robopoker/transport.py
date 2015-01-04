@@ -10,6 +10,7 @@ def create(type, service):
 
 
 class Abstract(object):
+
     def __init__(self, service):
         self.service = service
 
@@ -21,9 +22,10 @@ class Abstract(object):
 
 
 class Local(Abstract):
+
     def message(self, name, pocket, actions, state):
         p = Popen(self.service, stdin=PIPE, stdout=PIPE,
-                stderr=STDOUT, universal_newlines=True, shell=True)
+                  stderr=STDOUT, universal_newlines=True, shell=True)
         w = p.stdin.write
         w(name + "\n")
         w(pocket + "\n")
